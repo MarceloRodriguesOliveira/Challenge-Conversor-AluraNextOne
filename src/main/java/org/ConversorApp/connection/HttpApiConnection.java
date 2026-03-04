@@ -1,5 +1,6 @@
 package org.ConversorApp.connection;
 
+import com.google.gson.Gson;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.ConversorApp.dto.ConversionRequest;
 import org.ConversorApp.dto.ConversionResponse;
@@ -24,14 +25,16 @@ public class HttpApiConnection {
         );
     }
 
-    public void response(ConversionRequest request) throws IOException, InterruptedException {
+    public ConversionResponse response(ConversionRequest request) throws IOException, InterruptedException {
         String address = buildUrl(request);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(address)).GET().build();
 
         HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        String jsonData = response.body();
 
-        System.out.println(response.body());
+        Gson gson = new Gson();
+        return gson.fromJson(jsonData, ConversionResponse.class);
 
     }
 
